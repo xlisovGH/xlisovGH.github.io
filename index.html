@@ -5,68 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>xlisovGH.github.io</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap");
-
       body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        font-family: Consolas, monospace;
         background-color: #000;
-        font-family: "Chakra Petch", sans-serif;
-        color: white;
-        text-align: center;
-      }
-
-      h1 {
-        color: cornflowerblue;
-        font-size: 72px;
-        font-weight: 500;
-        letter-spacing: 5px;
-        text-shadow: 0 0 10px cornflowerblue;
+        overflow: hidden;
         margin: 0;
       }
 
-      p,
-      a {
-        color: crimson;
-        font-size: 22px;
-        text-shadow: 0 0 10px crimson;
-        margin: 5px 0;
-      }
-
-      a {
-        color: hotpink;
-        text-decoration: none;
-        text-shadow: 0 0 10px hotpink;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      .easter-egg {
+      .rain-container {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
-        font-size: 16px;
-        color: rgb(50, 50, 50);
-        font-weight: 600;
+        inset: 0;
+        pointer-events: none;
       }
 
-      .easter-egg:hover {
-        opacity: 1;
+      .drop {
+        position: absolute;
+        color: #0f0;
+        font-size: 1em;
+        animation: rain-fall linear infinite;
+        opacity: 0;
+      }
+
+      .drop.glow {
+        --glow-color: #0f0;
+        --glow-size1: 5px;
+        --glow-size2: 10px;
+        text-shadow: 0 0 var(--glow-size1)
+            rgba(var(--glow-color-rgb, 0, 255, 0), 0.7),
+          0 0 var(--glow-size2) rgba(var(--glow-color-rgb, 0, 255, 0), 0.5);
+      }
+
+      .drop.special {
+        --glow-color-rgb: 255, 0, 0;
+        color: rgb(142, 165, 229);
+        text-shadow: 0 0 5px rgba(142, 165, 229, 0.8),
+          0 0 10px rgba(142, 165, 229, 0.6);
+      }
+
+      @keyframes rain-fall {
+        0% {
+          transform: translateY(-10vh);
+          opacity: 0;
+        }
+        5% {
+          opacity: 1;
+        }
+        95% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh);
+          opacity: 0;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>xlisovGH.github.io</h1>
-    <p>Copyrights 2024 - 2025. All repositories belong to the owner</p>
-    <a href="mailto:oleksandrlysenko74@ukr.net"
-      >Contacts: oleksandrlysenko74@ukr.net</a
-    >
-    <div class="easter-egg">What are you doing here?</div>
+    <div class="rain-container"></div>
+
+    <script>
+      const rainContainer = document.querySelector(".rain-container");
+      const numDrops = 200;
+      const specialChance = 0.001;
+
+      const createDrop = () => {
+        const drop = document.createElement("div");
+        drop.classList.add("drop");
+        const isSpecial = Math.random() < specialChance;
+
+        drop.textContent = isSpecial
+          ? "xlisov"
+          : Math.random() < 0.5
+          ? "0"
+          : "1";
+        if (isSpecial) {
+          drop.classList.add("special");
+        } else {
+          drop.classList.add("glow");
+        }
+        drop.style.cssText = `left: ${
+          Math.random() * 100
+        }vw; animation-duration: ${Math.random() * 3 + 2}s; animation-delay: ${
+          Math.random() * 5
+        }s;`;
+        rainContainer.appendChild(drop);
+      };
+
+      for (let i = 0; i < numDrops; i++) {
+        createDrop();
+      }
+
+      const animate = () => {
+        const drops = rainContainer.children;
+        for (let i = drops.length - 1; i >= 0; i--) {
+          const drop = drops[i];
+          if (drop.getBoundingClientRect().top > window.innerHeight) {
+            drops[i].remove();
+            createDrop();
+          }
+        }
+
+        requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+    </script>
   </body>
 </html>
